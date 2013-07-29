@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset = "utf-8" />
+    <title>plane test</title>
+    <script src="myLibs/basic/svg.js"></script>
+    <script src="lib/line.js"></script>
+    <script src="lib/Obstacle.js"></script>
+    <script src="lib/plane.js"></script>
+    <script src="lib/GridBug.js"></script>
+    
+  </head>
+  <body>
+ <div id="canvas"></div>
+  <script>
+    var draw = SVG('canvas').size(400,400);
+    var plane = new Plane(draw,400,400, 10,10);
+    plane.addWall(2,1);
+    plane.addWall(1,2);
+    plane.addWall(1,1);
+    alert(plane.canMove(0,1,plane.EAST))
+    alert(plane.canMove(1,0,plane.EAST))
+    alert(plane.canMove(1,0,plane.SOUTH))
+  </script>
+  </body>
+</html>
