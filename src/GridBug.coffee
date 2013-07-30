@@ -83,6 +83,7 @@ class GridBug
                    if @frontIsClear()
                    	   @orientTowardGoal()
                        @moveStraight()
+                       return
                    else
                    	   alert("Start wallFollow")
                        @wallFollowing=true
@@ -90,6 +91,7 @@ class GridBug
                        @ensureWallToLeft()
                        @shortestPoint = {x:@x,y:@y}
                        @encounteredObj = {x:@x,y:@y}
+                       return
                else
                    if !@firstLap
                        @wallFollow()
@@ -97,12 +99,14 @@ class GridBug
                            @firstLap = false
                        else if(@manhattanDistance(@x,@y,@gx,@gy) < @manhattanDistance(@shortestPoint.x,@shortestPoint.y, @gx,@gy))
                            @shortestPoint = {x:@x,y:@y}
+                        return
                    else
                        if !@atPoint(@shortestPoint.x, @shortestPoint.y)
                            wallFollow()
                        else
                            @orientTowardGoal()
                            @wallFollowing = false
+                        return
             
        @plane.drawPoint(@x,@y)       
     wallFollow: ()->

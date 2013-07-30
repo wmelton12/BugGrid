@@ -17,7 +17,7 @@ class Plane
             @pts[@pts.length] = toAdd
         @widthX = @sizeX / @width
         @heightY = @sizeY / @height
-        alert("wx: " + @widthX + " wy: " + @heightY)
+        #alert("wx: " + @widthX + " wy: " + @heightY)
         @rects = []
         if @svg != null
         	i = 0
