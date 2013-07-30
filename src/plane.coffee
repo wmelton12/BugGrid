@@ -4,6 +4,7 @@ class Plane
         @NORTH = 90
         @WEST = 180
         @SOUTH = 270
+        @firstLap = true
         @pts = []
         i = 0
         while i < @width
@@ -35,7 +36,7 @@ class Plane
             	i++ 
     addWall: (x,y)->
         @pts[y][x] = true
-        if @svg != null then @rects[x][y].style("fill","black")
+        if @svg != null then @rects[y][x].style("fill","black")
     canMove: (x,y,dir) ->
         if dir == @EAST
            nx = x+1
@@ -49,10 +50,13 @@ class Plane
         else if dir == @SOUTH
            nx = x
            ny = y+1
-        return !@pts[ny][nx]
+        if ny >= @height || nx >= @width then return false
+        else return !@pts[ny][nx]
            
     drawPoint: (x,y)->
-           if @svg != null then @rects[y][x].style("fill","green")
+           @drawPointCol(x,y,"green")
+    drawPointCol: (x,y,color)->
+           if @svg != null then @rects[y][x].style("fill",color)
     clearPoint: (x,y)->
            if @svg != null then @rects[y][x].style("fill","white")
 this.Plane = Plane

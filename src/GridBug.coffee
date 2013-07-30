@@ -2,12 +2,14 @@ class GridBug
     constructor: (@plane,@x,@y,@gx,@gy)->
         @dir = @plane.EAST
         @wallFollowing = false
+        @firstLap = true
+        @shortestPoint = []
+        @encounteredObj = []
         @plane.drawPoint(@x,@y)
-		@firstLap = true
-		@shortestPoint = []
-		@encounteredObj = []
-	manhattanDistance: (x1,y1,x2,y2)->\\
-		return Math.abs((y2 - y1)) + Math.abs((x2 - x1))
+        @plane.drawPointCol(@gx,@gy,"red")
+        
+    manhattanDistance: (x1,y1,x2,y2)->
+        return Math.abs((y2 - y1)) + Math.abs((x2 - x1))
     frontIsClear: ()->
         return @plane.canMove(@x,@y,@dir)
     leftIsClear: ()->
@@ -46,9 +48,9 @@ class GridBug
     ensureWallToLeft: ()->
         i = 0
         while i < 4
-        	if !@leftIsClear() then return true
-        	@turnLeft()
-        	i++
+            if !@leftIsClear() then return true
+            @turnLeft()
+            i++
         return false
     orientTowardGoal: ()->
         angle = Math.atan( (@gy - @y) / (@gx - @x) )
@@ -65,6 +67,7 @@ class GridBug
         return Math.sqrt(Math.pow(x2-x1,2) + Math.pow(y2-y1,2))
     faceAwayFromWall: ()->
     moveStraight: ()->
+        if(!@plane.canMove(@x,@y,@dir)) then return false
         if @dir == @plane.EAST
             @x++
         else if @dir == @plane.NORTH
@@ -73,43 +76,46 @@ class GridBug
             @x--
         else if @dir == @plane.SOUTH
             @y++
+        return true
     move: ()->
-       if !@goalIsReached
-       		if !@wallFollowing
-       			if @frontIsClear()
-       				@moveStraight()
-       			else
-       				@wallFollowing=true
-       				@firstLap = true
-       				@turnRight()
-       				@shortestPoint = {x:@x,y:}
-       				@encounteredObj = {x:@x,y:@y}
-       		else
-       			if !firstLap
-       				@wallFollow()
-       				if @atPoint(@encounteredObj.x,@encounteredObj.y)
-       					@firstLap = false
-       					return true
-       				if(@manhattanDistance(@x,@y,@gx,@gy) < @manhattanDistance(@shortestPoint.x,@shortestPoint.y, @gx,@gy))
-       					@shortestPoint = {x:@x,y:@y}
-       			else
-       				if !@atPoint(@shortestPoint.x, @shortestPoint.y)
-       					wallFollow()
-       				else
-       					@orientTowardGoal()
-       					@wallFollowing = false
-       					
+       if !@goalIsReached()
+               if !@wallFollowing
+                   if @frontIsClear()
+                   	   @orientTowardGoal()
+                       @moveStraight()
+                   else
+                   	   alert("Start wallFollow")
+                       @wallFollowing=true
+                       @firstLap = true
+                       @ensureWallToLeft()
+                       @shortestPoint = {x:@x,y:@y}
+                       @encounteredObj = {x:@x,y:@y}
+               else
+                   if !@firstLap
+                       @wallFollow()
+                       if @atPoint(@encounteredObj.x,@encounteredObj.y)
+                           @firstLap = false
+                       else if(@manhattanDistance(@x,@y,@gx,@gy) < @manhattanDistance(@shortestPoint.x,@shortestPoint.y, @gx,@gy))
+                           @shortestPoint = {x:@x,y:@y}
+                   else
+                       if !@atPoint(@shortestPoint.x, @shortestPoint.y)
+                           wallFollow()
+                       else
+                           @orientTowardGoal()
+                           @wallFollowing = false
+            
+       @plane.drawPoint(@x,@y)       
     wallFollow: ()->
-    	if !@leftIsClear() && @frontIsClear()
-    		@moveStraight()
-    	else if !@leftIsCelar() && !@frontIsClear()
-    		@turnRight()
-    		@moveStraight()
-    	else if @leftIsClear()
-    		@turnLeft()
-    		@moveStraight()
+        if !@leftIsClear() && @frontIsClear()
+            @moveStraight()
+        else if !@leftIsCelar() && !@frontIsClear()
+            @turnRight()
+            @moveStraight()
+        else if @leftIsClear()
+            @turnLeft()
+            @moveStraight()
     atPoint: (px,py)->
-    	return px == @x && py==@y
+        return px == @x && py==@y
     goalIsReached: ()->
         if @x == @gx && @y == @gy
             return true
