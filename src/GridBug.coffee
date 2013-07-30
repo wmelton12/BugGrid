@@ -3,7 +3,11 @@ class GridBug
         @dir = @plane.EAST
         @wallFollowing = false
         @plane.drawPoint(@x,@y)
-
+		@firstLap = true
+		@shortestPoint = []
+		@encounteredObj = []
+	manhattanDistance: (x1,y1,x2,y2)->\\
+		return Math.abs((y2 - y1)) + Math.abs((x2 - x1))
     frontIsClear: ()->
         return @plane.canMove(@x,@y,@dir)
     leftIsClear: ()->
@@ -40,8 +44,12 @@ class GridBug
         else if @dir == @plane.SOUTH
             @dir = @plane.WEST
     ensureWallToLeft: ()->
-        while @leftIsClear()
-            @turnLeft()
+        i = 0
+        while i < 4
+        	if !@leftIsClear() then return true
+        	@turnLeft()
+        	i++
+        return false
     orientTowardGoal: ()->
         angle = Math.atan( (@gy - @y) / (@gx - @x) )
         if angle < 0 then angle = 360 + angle
@@ -66,23 +74,42 @@ class GridBug
         else if @dir == @plane.SOUTH
             @y++
     move: ()->
-        if(@wallFollowing)
-            if @frontIsClear() && !@leftIsClear()
-                @moveStraight()
-            else if !@frontIsClear() && !@leftIsClear()
-                @turnLeft()
-            else if  @leftIsClear()
-                @turnLeft()
-                @moveStraight()
-        else
-            @orientTowardGoal()
-            if @frontIsClear
-                @moveStraight()
-            else
-                alert("wallFollowing")
-                @wallFollowing = true
-                @ensureWallToLeft()
-        @plane.drawPoint(@x,@y)
+       if !@goalIsReached
+       		if !@wallFollowing
+       			if @frontIsClear()
+       				@moveStraight()
+       			else
+       				@wallFollowing=true
+       				@firstLap = true
+       				@turnRight()
+       				@shortestPoint = {x:@x,y:}
+       				@encounteredObj = {x:@x,y:@y}
+       		else
+       			if !firstLap
+       				@wallFollow()
+       				if @atPoint(@encounteredObj.x,@encounteredObj.y)
+       					@firstLap = false
+       					return true
+       				if(@manhattanDistance(@x,@y,@gx,@gy) < @manhattanDistance(@shortestPoint.x,@shortestPoint.y, @gx,@gy))
+       					@shortestPoint = {x:@x,y:@y}
+       			else
+       				if !@atPoint(@shortestPoint.x, @shortestPoint.y)
+       					wallFollow()
+       				else
+       					@orientTowardGoal()
+       					@wallFollowing = false
+       					
+    wallFollow: ()->
+    	if !@leftIsClear() && @frontIsClear()
+    		@moveStraight()
+    	else if !@leftIsCelar() && !@frontIsClear()
+    		@turnRight()
+    		@moveStraight()
+    	else if @leftIsClear()
+    		@turnLeft()
+    		@moveStraight()
+    atPoint: (px,py)->
+    	return px == @x && py==@y
     goalIsReached: ()->
         if @x == @gx && @y == @gy
             return true
