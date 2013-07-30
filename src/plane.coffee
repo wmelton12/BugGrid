@@ -18,24 +18,24 @@ class Plane
         @heightY = @sizeY / @height
         alert("wx: " + @widthX + " wy: " + @heightY)
         @rects = []
-        i = 0
         if @svg != null
+        	i = 0
         	while i < @width
             	j = 0
             	toAdd = []
             	while j < @height
-               	 	#alert("i: " + i + " j: " + j + " color: " + color)
+                	#alert("i: " + i + " j: " + j + " color: " + color)
                 	toAdd[toAdd.length] = @svg.rect(@widthX,@heightY).move(j * @widthX, i * @heightY).attr({
-                     	stroke:"black",
-                    	"stroke-width":0.5,
-                    	fill: "white"
+                	     stroke:"black",
+                    	 "stroke-width":0.5,
+                    	 fill: "white"
                 	})   
                 	j++
-           	 	@rects[@rects.length] = toAdd
+            	@rects[@rects.length] = toAdd
             	i++ 
     addWall: (x,y)->
         @pts[y][x] = true
-        if !svg != null then @rects[x][y].style("fill","black")
+        if @svg != null then @rects[x][y].style("fill","black")
     canMove: (x,y,dir) ->
         if dir == @EAST
            nx = x+1
@@ -49,8 +49,6 @@ class Plane
         else if dir == @SOUTH
            nx = x
            ny = y+1
-        alert("nx: " + nx + " ny: " + ny)
-        alert(@pts)
         return !@pts[ny][nx]
            
     drawPoint: (x,y)->
