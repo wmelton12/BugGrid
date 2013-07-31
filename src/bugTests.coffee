@@ -5,7 +5,7 @@ alert = console.log
 {Plane} = require 'plane'
 {GridBug} = require 'GridBug'
 
-planeTests = ->
+bugTests1= ->
 
   {Plane} = require 'plane'
   {GridBug} = require 'GridBug'
@@ -37,39 +37,40 @@ planeTests = ->
   bug.moveStraight()
   alert([bug.x,bug.y])
   test "should pass", -> arrayEq [2,1],[bug.x,bug.y]
-  
-planeTests()  # run plane tests
+moveTest= ->
+	plane = new Plane(null, 100,100,10,10)
+	plane.addWall(5,5)
+	bug = new GridBug(plane, 4, 5, 9, 5)
+
+	test "should pass", -> arrayEq [bug.x,bug.y],[4,5]
+	test "should pass", -> eq bug.dir, plane.EAST
+	test "should pass", -> eq false, bug.frontIsClear()
+	bug.turnLeft()
+	test "should pass", -> eq bug.dir,plane.NORTH
+	test "should pass", -> eq true, bug.frontIsClear()
+	test "should pass", -> eq false, bug.rightIsClear()
+	bug.turnRight()
+	bug.turnRight()
+	test "should pass", -> eq bug.dir,plane.SOUTH    
+	test "should pass", -> ok bug.frontIsClear()
+	test "should pass", -> eq false, bug.leftIsClear()
+
+	bug = new GridBug(plane, 0,5,9,5)
+	
+	test "should pass", -> arrayEq [bug.x,bug.y],[0,5]
+	bug.moveUntilHitWall()
+	alert([bug.x,bug.y])
+	test "should pass", -> arrayEq [bug.x,bug.y],[4,5]
+
+	bug.turnLeft()
+	bug.orientTowardGoal()
+	test "should pass", -> eq bug.dir, plane.EAST
+	
+bugTests1()  # run bug dir tests tests
 test.status()
 
 console.log "test2"
 
-plane = new Plane(null, 100,100,10,10)
-plane.addWall(5,5)
-bug = new GridBug(plane, 4, 5, 9, 5)
-
-test "should pass", -> arrayEq [bug.x,bug.y],[4,5]
-test "should pass", -> eq bug.dir, plane.EAST
-test "should pass", -> eq false, bug.frontIsClear()
-bug.turnLeft()
-test "should pass", -> eq bug.dir,plane.NORTH
-test "should pass", -> eq true, bug.frontIsClear()
-test "should pass", -> eq false, bug.rightIsClear()
-bug.turnRight()
-bug.turnRight()
-test "should pass", -> eq bug.dir,plane.SOUTH    
-test "should pass", -> ok bug.frontIsClear()
-test "should pass", -> eq false, bug.leftIsClear()
-
-bug.x = 0
-bug.y = 5
-bug.dir = 0
-test "should pass", -> arrayEq [bug.x,bug.y],[0,5]
-bug.moveUntilHitWall()
-alert([bug.x,bug.y])
-test "should pass", -> arrayEq [bug.x,bug.y],[4,5]
-
-bug.turnLeft()
-bug.orientTowardGoal()
-test "should pass", -> eq bug.dir, plane.EAST
+moveTest() # run move tests
 
 test.status()
