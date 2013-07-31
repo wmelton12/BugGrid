@@ -6,8 +6,7 @@ class GridBug
         @shortestPoint = []
         @encounteredObj = []
         @plane.drawPoint(@x,@y)
-        @plane.drawPointCol(@gx,@gy,"red")
-        
+        @plane.drawPointCol(@gx,@gy,"red") 
     manhattanDistance: (x1,y1,x2,y2)->
         return Math.abs((y2 - y1)) + Math.abs((x2 - x1))
     frontIsClear: ()->
@@ -76,16 +75,17 @@ class GridBug
             @x--
         else if @dir == @plane.SOUTH
             @y++
+        @plane.drawPoint(@x,@y)   
         return true
     move: ()->
        if !@goalIsReached()
                if !@wallFollowing
                    if @frontIsClear()
-                   	   @orientTowardGoal()
+                          @orientTowardGoal()
                        @moveStraight()
                        return
                    else
-                   	   alert("Start wallFollow")
+                          alert("Start wallFollow")
                        @wallFollowing=true
                        @firstLap = true
                        @ensureWallToLeft()
@@ -106,9 +106,20 @@ class GridBug
                        else
                            @orientTowardGoal()
                            @wallFollowing = false
-                        return
-            
-       @plane.drawPoint(@x,@y)       
+                        return true
+    goalIsReached: ()->
+        if @x == @gx && @y == @gy
+            return true
+        else 
+            return false         
+    goToGoal: ()->
+        while !@goalIsReached()
+            @orientTowardGoal()
+            @moveStraight()      
+    moveUntilHitWall: ()->
+        until !@frontIsClear()
+            #console.log("position: " +     [@x,@y] + " dir: " + @dir)
+               @moveStraight()    
     wallFollow: ()->
         if !@leftIsClear() && @frontIsClear()
             @moveStraight()
@@ -120,9 +131,5 @@ class GridBug
             @moveStraight()
     atPoint: (px,py)->
         return px == @x && py==@y
-    goalIsReached: ()->
-        if @x == @gx && @y == @gy
-            return true
-        else 
-            return false
+
 this.GridBug = GridBug
