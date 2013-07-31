@@ -51,17 +51,33 @@ class GridBug
             @turnLeft()
             i++
         return false
+    radToDeg: (rad) ->
+    	return rad * (180 / Math.PI)
     orientTowardGoal: ()->
-        angle = Math.atan( (@gy - @y) / (@gx - @x) )
-        if angle < 0 then angle = 360 + angle
-        if angle < 45 || angle >= 315
-            @dir = @plane.EAST
-        else if 45 <= angle < 135
-            @dir = @plane.NORTH
-        else if 135 <= angle < 225
-            @dir = @plane.WEST
-        else if 225 <= angle < 315
-            @dir = @plane.SOUTH
+        yDist = @gy - @y
+        xDist = @gx - @x
+        if yDist < 0
+        	if xDist < 0
+        		if Math.abs(xDist) > Math.abs(yDist)
+        			@dir = @plane.WEST
+        		else
+        			@dir = @plane.NORTH
+        	else
+        		if Math.abs(xDist) >  Math.abs(yDist)
+        			@dir = @plane.EASt
+        		else
+        			@dir = @plane.NORTH
+        else 
+        	if xDist < 0
+        		if Math.abs(xDist) >  Math.abs(yDist)
+        			@dir = @plane.WEST
+        		else
+        			@dir = @plane.SOUTH
+        	else
+        		if Math.abs(xDist) >  Math.abs(yDist)
+        			@dir = @plane.EAST
+        		else
+        			@dir = @plane.SOUTH
     dist: (x1,y1,x2,y2)->
         return Math.sqrt(Math.pow(x2-x1,2) + Math.pow(y2-y1,2))
     faceAwayFromWall: ()->
@@ -81,17 +97,15 @@ class GridBug
        if !@goalIsReached()
                if !@wallFollowing
                    if @frontIsClear()
-                          @orientTowardGoal()
+                       @orientTowardGoal()
                        @moveStraight()
-                       return
                    else
-                          alert("Start wallFollow")
+                       alert("Start wallFollow")
                        @wallFollowing=true
                        @firstLap = true
                        @ensureWallToLeft()
                        @shortestPoint = {x:@x,y:@y}
                        @encounteredObj = {x:@x,y:@y}
-                       return
                else
                    if !@firstLap
                        @wallFollow()
@@ -99,14 +113,12 @@ class GridBug
                            @firstLap = false
                        else if(@manhattanDistance(@x,@y,@gx,@gy) < @manhattanDistance(@shortestPoint.x,@shortestPoint.y, @gx,@gy))
                            @shortestPoint = {x:@x,y:@y}
-                        return
                    else
                        if !@atPoint(@shortestPoint.x, @shortestPoint.y)
                            wallFollow()
                        else
                            @orientTowardGoal()
                            @wallFollowing = false
-                        return true
     goalIsReached: ()->
         if @x == @gx && @y == @gy
             return true
@@ -115,7 +127,18 @@ class GridBug
     goToGoal: ()->
         while !@goalIsReached()
             @orientTowardGoal()
-            @moveStraight()      
+            if @frontIsClear()
+                @moveStraight()
+            else 
+            	or = {x:@x,y:@y}
+            	sp = {x:@x,y:2y}
+            	while(!@atPoint(or.x,or.y))
+            		@wallFollow()
+            		if(@manhattanDistance(@x,@y,@gx,@gy) < @manhattanDistance(sp.x,sp.y,@gx,@gy))
+            			sp = {x:@x,y:@y}
+            	while !@atPoint(sp.x,sp.y)
+            		@wallFollow()
+            	@orientTowardGoal()  
     moveUntilHitWall: ()->
         until !@frontIsClear()
             #console.log("position: " +     [@x,@y] + " dir: " + @dir)
