@@ -87,11 +87,34 @@ orientTowardsGoalTests = ->
 	bug.gy = 0
 	bug.orientTowardGoal()
 	test "should pass", -> eq bug.dir, plane.NORTH
-	
+wallFollowTest = ->
+	plane = new Plane(null,100,100,10,10)
+	i = 3
+	while i < 7
+		j = 3
+		while j < 7
+			plane.addWall(i,j)
+			j++
+		i++
+	plane.addWall(6,7)
+	bug = new GridBug(plane,5,7,9,7)
+	test 'should pass', -> arrayEq [bug.x,bug.y],[5,7]
+	test 'should pass', -> eq bug.dir,plane.EAST
+	test 'should pass', -> eq false, bug.frontIsClear()
+	bug.wallFollow()
+	test 'should pass', -> eq bug.dir, plane.SOUTH
+	test 'should pass', -> arrayEq [bug.x,bug.y],[5,8]
+	bug.wallFollow()
+	test 'should pass', -> eq bug.dir, plane.EAST
+	test 'should pass', -> arrayEq [bug.x,bug.y],[6,8]
 moveToGoalTest = ->
 	plane = new Plane(null,100,100,10,10)
+	plane.addWall(5,5)
+	plane.addWall(4,4)
+	plane.addWall(5,4)
 	bug = new GridBug(plane,0,0,9,9)
 	test "should pass", -> arrayEq [bug.x,bug.y], [0,0]
-orientTowardsGoalTests()
-moveToGoalTest()	
+	bug.goToGoal()
+	test "should pass", -> arrayEq [bug.x,bug.y], [9,9]
+wallFollowTest()	
 test.status()

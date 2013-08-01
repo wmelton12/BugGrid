@@ -130,9 +130,10 @@ class GridBug
             if @frontIsClear()
                 @moveStraight()
             else 
-            	or = {x:@x,y:@y}
-            	sp = {x:@x,y:2y}
-            	while(!@atPoint(or.x,or.y))
+            	@turnRight()
+            	hitWall = {x:@x,y:@y}
+            	sp = {x:@x,y:@y}
+            	while(!@atPoint(hitWall.x,hitWall.y))
             		@wallFollow()
             		if(@manhattanDistance(@x,@y,@gx,@gy) < @manhattanDistance(sp.x,sp.y,@gx,@gy))
             			sp = {x:@x,y:@y}
@@ -141,17 +142,18 @@ class GridBug
             	@orientTowardGoal()  
     moveUntilHitWall: ()->
         until !@frontIsClear()
-            #console.log("position: " +     [@x,@y] + " dir: " + @dir)
-               @moveStraight()    
+            #console.log("position: " + [@x,@y] + " dir: " + @dir)
+            @moveStraight()    
     wallFollow: ()->
         if !@leftIsClear() && @frontIsClear()
             @moveStraight()
-        else if !@leftIsCelar() && !@frontIsClear()
+        else if !@leftIsClear() && !@frontIsClear()
             @turnRight()
             @moveStraight()
         else if @leftIsClear()
             @turnLeft()
             @moveStraight()
+        
     atPoint: (px,py)->
         return px == @x && py==@y
 
