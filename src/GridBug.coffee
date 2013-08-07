@@ -52,36 +52,37 @@ class GridBug
             i++
         return false
     radToDeg: (rad) ->
-    	return rad * (180 / Math.PI)
+        return rad * (180 / Math.PI)
     orientTowardGoal: ()->
         yDist = @gy - @y
         xDist = @gx - @x
         if yDist < 0
-        	if xDist < 0
-        		if Math.abs(xDist) > Math.abs(yDist)
-        			@dir = @plane.WEST
-        		else
-        			@dir = @plane.NORTH
-        	else
-        		if Math.abs(xDist) >  Math.abs(yDist)
-        			@dir = @plane.EASt
-        		else
-        			@dir = @plane.NORTH
+            if xDist < 0
+                if Math.abs(xDist) > Math.abs(yDist)
+                    @dir = @plane.WEST
+                else
+                    @dir = @plane.NORTH
+            else
+                if Math.abs(xDist) >  Math.abs(yDist)
+                    @dir = @plane.EASt
+                else
+                    @dir = @plane.NORTH
         else 
-        	if xDist < 0
-        		if Math.abs(xDist) >  Math.abs(yDist)
-        			@dir = @plane.WEST
-        		else
-        			@dir = @plane.SOUTH
-        	else
-        		if Math.abs(xDist) >  Math.abs(yDist)
-        			@dir = @plane.EAST
-        		else
-        			@dir = @plane.SOUTH
+            if xDist < 0
+                if Math.abs(xDist) >  Math.abs(yDist)
+                    @dir = @plane.WEST
+                else
+                    @dir = @plane.SOUTH
+            else
+                if Math.abs(xDist) >  Math.abs(yDist)
+                    @dir = @plane.EAST
+                else
+                    @dir = @plane.SOUTH
     dist: (x1,y1,x2,y2)->
         return Math.sqrt(Math.pow(x2-x1,2) + Math.pow(y2-y1,2))
     faceAwayFromWall: ()->
     moveStraight: ()->
+        console.log "x:#{@x} y:#{@y}"
         if(!@plane.canMove(@x,@y,@dir)) then return false
         if @dir == @plane.EAST
             @x++
@@ -94,7 +95,7 @@ class GridBug
         @plane.drawPoint(@x,@y)   
         return true
     move: ()->
-       if !@goalIsReached()
+       if !@atGoal()
                if !@wallFollowing
                    if @frontIsClear()
                        @orientTowardGoal()
@@ -119,32 +120,47 @@ class GridBug
                        else
                            @orientTowardGoal()
                            @wallFollowing = false
-    goalIsReached: ()->
-        if @x == @gx && @y == @gy
-            return true
-        else 
-            return false         
+    atPoint: (px,py)->
+        return px == @x && py == @y
+    atGoal: ()->
+        return @atPoint(@gx,@gy)         
     goToGoal: ()->
-        while !@goalIsReached()
-            @orientTowardGoal()
-            if @frontIsClear()
+        while true
+            while !@atGoal() && @frontIsClear()
+                @orientTowardGoal()
                 @moveStraight()
-            else 
-            	@turnRight()
-            	hitWall = {x:@x,y:@y}
-            	sp = {x:@x,y:@y}
-            	while(!@atPoint(hitWall.x,hitWall.y))
-            		@wallFollow()
-            		if(@manhattanDistance(@x,@y,@gx,@gy) < @manhattanDistance(sp.x,sp.y,@gx,@gy))
-            			sp = {x:@x,y:@y}
-            	while !@atPoint(sp.x,sp.y)
-            		@wallFollow()
-            	@orientTowardGoal()  
+            if @atGoal()
+                console.log 'check at goal'
+                return true
+            console.log 'turnRight'
+            @turnRight()
+            console.log 'find point'
+            sp = @findShortestPoint()
+            console.log sp
+            while !@atPoint(sp.x,sp.y) && !@atGoal()
+                console.log 'go to sp'
+                @wallFollow()
+            if @atGoal()
+                return true
+            @orientTowardGoal()
+    findShortestPoint: ()->
+        hw = {x:@x,y:@y}
+        sp = {x:@x,y:@y}
+        @wallFollow()
+        if @manhattanDistance(@x,@y,@gx,@gy) < @manhattanDistance(sp.x,sp.y,@gx,@gy)
+            sp = {x:@x,y:@y}
+        while !@atPoint(hw.x,hw.y)
+            console.log 'sp finding'
+            @wallFollow()
+            if @manhattanDistance(@x,@y,@gx,@gy) < @manhattanDistance(sp.x,sp.y,@gx,@gy)
+                sp = {x:@x,y:@y}
+        return sp
     moveUntilHitWall: ()->
         until !@frontIsClear()
             #console.log("position: " + [@x,@y] + " dir: " + @dir)
             @moveStraight()    
     wallFollow: ()->
+        #console.log "x:#{@x} y:#{@y}"
         if !@leftIsClear() && @frontIsClear()
             @moveStraight()
         else if !@leftIsClear() && !@frontIsClear()
@@ -154,7 +170,5 @@ class GridBug
             @turnLeft()
             @moveStraight()
         
-    atPoint: (px,py)->
-        return px == @x && py==@y
-
+    
 this.GridBug = GridBug
