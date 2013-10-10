@@ -129,6 +129,7 @@ class GridBug
             while !@atGoal() && @frontIsClear()
                 @orientTowardGoal()
                 @moveStraight()
+                @orientTowardGoal()
             if @atGoal()
                 console.log 'check at goal'
                 return true
