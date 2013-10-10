@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="myLibs/basic/svg.js"></script>
+		<script src="http://joyrexus.spc.uchicago.edu/resources/coffee-script.js"></script>
+		<script src="src/plane.coffee" type="text/coffeescript"></script>
+		<script src="src/GridBug.coffee" type="text/coffeescript"></script>
+	</head>
+	<body>
+	<div id="canvas"></div>
+<script type="text/coffeescript">
+svg = SVG('canvas').size(500,500)
+
+plane = new Plane(svg, 500, 500, 30,30)
+plane.addWall(4,4)
+plane.addWall(3,4)
+plane.addWall(5,4)
+plane.addWall(4,5)
+plane.addWall(5,5)
+plane.addWall(8,8)
+for i in [10...20]
+	plane.addWall(i,15)
+plane.addWall(10,16)
+for i in [12...22]
+	plane.addWall(i,16)
+for i in [7...15]
+	plane.addWall(i,17)
+for i in [23...27]
+	for j in [i-1...27]
+		plane.addWall(i,j)
+bug = new GridBug(plane,0,0,29,29)
+bug.goToGoal()
+</script>
+	</body>
+</html>
